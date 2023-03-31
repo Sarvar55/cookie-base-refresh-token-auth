@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -52,9 +53,15 @@ public class CookieUtils {
         return generateJwtCookie(data, cookieName, maxAge);
     }
 
-    public ResponseCookie getCleanJwtCookie(String cookieName) {
-        ResponseCookie cookie = ResponseCookie.from(cookieName, null).path("/api").build();
-        return cookie;
+    public void getCleanJwtCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
+        Cookie cookie = getJwtFromCookies(request, cookieName);
+        if (cookie != null) {
+            cookie.setMaxAge(0);
+            cookie.setValue(null);
+            cookie.setPath("/api");
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+        }
     }
 
 

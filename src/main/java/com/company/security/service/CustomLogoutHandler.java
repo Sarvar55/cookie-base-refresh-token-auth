@@ -27,14 +27,7 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        Cookie cookie = cookieUtils.getJwtFromCookies(request, appEnv.getJwtCookieName());
-        if (cookie != null) {
-            cookie.setMaxAge(0);
-            cookie.setValue(null);
-            cookie.setPath("/api");
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
-        }
+        cookieUtils.getCleanJwtCookie(request, response, appEnv.getJwtCookieName());
         SecurityContextHolder.clearContext();
     }
 }
